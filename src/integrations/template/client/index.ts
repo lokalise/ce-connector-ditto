@@ -1,1 +1,1 @@
-// TODO: template connector 3-rd party client implementation
+// TODO: ditto connector 3-rd party client implementation

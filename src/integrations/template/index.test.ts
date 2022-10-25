@@ -1,5 +1,5 @@
 // TODO: implement integration tests
-describe('Template service', () => {
+describe('Ditto service', () => {
   it.skip('skip', () => {
     expect(true).toBe(true)
   })
