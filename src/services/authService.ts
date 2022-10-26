@@ -1,13 +1,25 @@
+import axios from 'axios'
+import config from 'src/config'
 import type { PostAuthResultRequestPayload } from 'src/routes/auth/types'
 import type { AuthConfig, IntegrationConfig } from 'src/types'
 
 // API key flow
-const validate = async (config: IntegrationConfig) => {
-  // TODO: implementation
-  // response structure depends on platform specificity
-  return Promise.resolve({
-    key: 'apiKey',
-  })
+const validate = async (integrationConfig: IntegrationConfig) => {
+  try {
+    const res = await axios.get(`${config.app.dittoUrl}/components`, {
+      headers: { Authorization: `Bearer ${integrationConfig.apiKey}` },
+    })
+
+    if (res.status !== 200) {
+      return undefined
+    }
+
+    return {
+      key: 'apiKey',
+    }
+  } catch {
+    return undefined
+  }
 }
 
 // OAuth flow
