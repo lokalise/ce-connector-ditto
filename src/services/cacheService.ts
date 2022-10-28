@@ -1,7 +1,5 @@
-import axios from 'axios'
-import config from 'src/config'
 import type { AuthConfig, IntegrationConfig, ItemIdentifiers } from '../types'
-import { structuredComponentsResponse } from './schema'
+import { getWorkspaceComponents, parseName } from './dittoService'
 
 const listItems = async (integrationConfig: IntegrationConfig, auth: AuthConfig) => {
   if (!String(auth.apiKey) || auth.apiKey === '') {
@@ -49,32 +47,6 @@ const getItems = async (config: IntegrationConfig, auth: AuthConfig, ids: ItemId
     title: data.name,
     groupTitle: parseName(data.name).groupName || 'No group',
   }))
-}
-
-const getWorkspaceComponents = async (apiKey: string) => {
-  const res = await axios.get(`${config.app.dittoUrl}/components`, {
-    headers: { Authorization: `Bearer ${apiKey}` },
-  })
-
-  if (res.status !== 200) {
-    return undefined
-  }
-
-  return structuredComponentsResponse.safeParse(res.data)
-}
-
-const parseName = (name: string) => {
-  if (!name.includes('/')) {
-    return { groupName: null, name }
-  }
-
-  const [groupName, ...nameSplit] = name.split('/')
-  const joinedName = nameSplit.join('/')
-
-  return {
-    groupName,
-    name: joinedName,
-  }
 }
 
 const cacheService = {
