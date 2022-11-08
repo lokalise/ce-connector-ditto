@@ -1,10 +1,10 @@
 import axios from 'axios'
-import config from 'src/config'
+import config from '../config'
 import { structuredComponentsResponse } from './schema'
 
 export const getWorkspaceComponents = async (apiKey: string) => {
   const res = await axios.get(`${config.app.dittoUrl}/components`, {
-    headers: { Authorization: `Bearer ${apiKey}` },
+    headers: { Authorization: `Bearer ${apiKey}`, origin: 'lokalise' },
   })
 
   if (res.status !== 200) {
@@ -26,4 +26,16 @@ export const parseName = (name: string) => {
     groupName,
     name: joinedName,
   }
+}
+
+export type VariantUpdateData = Record<string, Record<string, { text: string }>>
+
+export const updateVariants = async (toUpdate: VariantUpdateData, apiKey: string) => {
+  const updatePromises: Array<Promise<any>> = Object.entries(toUpdate).map(([variant, data]) =>
+    axios.put(`${config.app.dittoUrl}/components?variant=${variant}`, data, {
+      headers: { Authorization: `Bearer ${apiKey}`, origin: 'lokalise' },
+    }),
+  )
+
+  await Promise.all(updatePromises)
 }

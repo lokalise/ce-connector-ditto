@@ -1,5 +1,5 @@
 import axios from 'axios'
-import config from 'src/config'
+import config from '../config'
 import type { PostAuthResultRequestPayload } from 'src/routes/auth/types'
 import type { AuthConfig, IntegrationConfig } from 'src/types'
 
@@ -7,7 +7,7 @@ import type { AuthConfig, IntegrationConfig } from 'src/types'
 const validate = async (integrationConfig: IntegrationConfig) => {
   try {
     const res = await axios.get(`${config.app.dittoUrl}/components`, {
-      headers: { Authorization: `Bearer ${integrationConfig.apiKey}` },
+      headers: { Authorization: `Bearer ${integrationConfig.apiKey}`, origin: 'lokalise' },
     })
 
     if (res.status !== 200) {

@@ -37,16 +37,20 @@ const getItems = async (config: IntegrationConfig, auth: AuthConfig, ids: ItemId
     ([wsCompId]) => desiredIds.includes(wsCompId),
   )
 
-  return filteredWorkspaceComponentEntries.map(([id, data]) => ({
-    uniqueId: id,
-    groupId: parseName(data.name).groupName || 'null',
-    metadata: {},
-    fields: {
-      folder: data.folder || '',
-    },
-    title: data.name,
-    groupTitle: parseName(data.name).groupName || 'No group',
-  }))
+  return filteredWorkspaceComponentEntries.map(([id, data]) => {
+    const parsedName = parseName(data.name)
+
+    return {
+      uniqueId: id,
+      groupId: parseName(data.name).groupName || 'null',
+      metadata: {},
+      fields: {
+        folder: data.folder || '',
+      },
+      title: parsedName.name,
+      groupTitle: parsedName.groupName || 'No group',
+    }
+  })
 }
 
 const cacheService = {

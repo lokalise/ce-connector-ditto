@@ -1,21 +1,14 @@
 import type { AuthConfig, IntegrationConfig } from 'src/types'
 
 const getLocales = async (config: IntegrationConfig, auth: AuthConfig) => {
-  //TODO: implementation
   return Promise.resolve({
     defaultLocale: 'en',
-    locales: [
-      {
-        code: 'en',
-        name: 'English',
-      },
-    ],
+    locales: [],
   })
 }
 
 const getCacheItemStructure = async (config: IntegrationConfig, auth: AuthConfig) => {
-  //TODO: implementation
-  return Promise.resolve({ foo: 'bar' })
+  return Promise.resolve({})
 }
 
 const envService = {
