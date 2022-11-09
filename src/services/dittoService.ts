@@ -23,7 +23,7 @@ export const parseName = (name: string) => {
   const joinedName = nameSplit.join('/')
 
   return {
-    groupName,
+    groupName: groupName.replaceAll(' ', ''),
     name: joinedName,
   }
 }
