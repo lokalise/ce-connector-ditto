@@ -1,12 +1,13 @@
 import type { AuthConfig, IntegrationConfig, ItemIdentifiers } from '../types'
+
 import { getWorkspaceComponents, parseName } from './dittoService'
 
 const listItems = async (integrationConfig: IntegrationConfig, auth: AuthConfig) => {
-  if (!String(auth.apiKey) || auth.apiKey === '') {
+  if (typeof auth.apiKey !== 'string') {
     return undefined
   }
 
-  const validatedData = await getWorkspaceComponents(auth.apiKey as string)
+  const validatedData = await getWorkspaceComponents(auth.apiKey)
 
   if (!validatedData || !validatedData.success) {
     console.error('Unexpected data from Ditto')
@@ -15,17 +16,17 @@ const listItems = async (integrationConfig: IntegrationConfig, auth: AuthConfig)
 
   return Object.entries(validatedData.data).map(([id, data]) => ({
     uniqueId: id,
-    groupId: parseName(data.name).groupName || 'null',
+    groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
     metadata: {},
   }))
 }
 
 const getItems = async (config: IntegrationConfig, auth: AuthConfig, ids: ItemIdentifiers[]) => {
-  if (!String(auth.apiKey) || auth.apiKey === '') {
+  if (typeof auth.apiKey !== 'string') {
     return undefined
   }
 
-  const validatedData = await getWorkspaceComponents(auth.apiKey as string)
+  const validatedData = await getWorkspaceComponents(auth.apiKey)
 
   if (!validatedData || !validatedData.success) {
     console.error('Unexpected data from Ditto')
@@ -42,7 +43,7 @@ const getItems = async (config: IntegrationConfig, auth: AuthConfig, ids: ItemId
 
     return {
       uniqueId: id,
-      groupId: parseName(data.name).groupName || 'null',
+      groupId: parsedName.groupName?.replaceAll(' ', '') || id,
       metadata: {},
       fields: {
         folder: data.folder || '',

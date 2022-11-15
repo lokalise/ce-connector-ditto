@@ -35,7 +35,7 @@ const postAuth = async (req: FastifyRequest, reply: PostAuthResponse) => {
 }
 
 const postAuthRefresh = async (req: FastifyRequest, reply: PostAuthRefreshResponse) => {
-  const authConfig = await authService.refresh(req.integrationConfig, req.authConfig)
+  const authConfig = await authService.refresh()
 
   if (!authConfig) {
     await reply.status(403).send({
@@ -52,7 +52,7 @@ const postAuthResponse = async (
   req: FastifyRequest<{ Body: PostAuthResultRequestPayload }>,
   reply: PostAuthResultResponse,
 ) => {
-  const credentials = await authService.getAuthCredentials(req.body)
+  const credentials = await authService.getAuthCredentials()
 
   if (!credentials) {
     await reply.status(403).send({

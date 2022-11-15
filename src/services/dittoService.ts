@@ -1,5 +1,7 @@
 import axios from 'axios'
+
 import config from '../config'
+
 import { structuredComponentsResponse } from './schema'
 
 export const getWorkspaceComponents = async (apiKey: string) => {
@@ -23,7 +25,7 @@ export const parseName = (name: string) => {
   const joinedName = nameSplit.join('/')
 
   return {
-    groupName: groupName.replaceAll(' ', ''),
+    groupName: groupName,
     name: joinedName,
   }
 }
@@ -31,7 +33,7 @@ export const parseName = (name: string) => {
 export type VariantUpdateData = Record<string, Record<string, { text: string }>>
 
 export const updateVariants = async (toUpdate: VariantUpdateData, apiKey: string) => {
-  const updatePromises: Array<Promise<any>> = Object.entries(toUpdate).map(([variant, data]) =>
+  const updatePromises: Array<Promise<unknown>> = Object.entries(toUpdate).map(([variant, data]) =>
     axios.put(`${config.app.dittoUrl}/components?variant=${variant}`, data, {
       headers: { Authorization: `Bearer ${apiKey}`, origin: 'lokalise' },
     }),

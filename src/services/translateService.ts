@@ -1,5 +1,5 @@
-import { string } from 'zod'
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../types'
+
 import { getWorkspaceComponents, parseName } from './dittoService'
 
 const getContent = async (
@@ -11,11 +11,11 @@ const getContent = async (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defaultLocale: string,
 ): Promise<[ContentItem[] | undefined, ItemIdentifiers[]]> => {
-  if (!String(auth.apiKey) || auth.apiKey === '') {
+  if (typeof auth.apiKey !== 'string') {
     return [undefined, []]
   }
 
-  const validatedData = await getWorkspaceComponents(auth.apiKey as string)
+  const validatedData = await getWorkspaceComponents(auth.apiKey)
 
   if (!validatedData || !validatedData.success) {
     console.error('Unexpected data from Ditto')
@@ -40,7 +40,7 @@ const getContent = async (
 
     return {
       uniqueId: id,
-      groupId: parseName(data.name).groupName || 'null',
+      groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
       metadata: {},
       translations: {
         ...localTexts,

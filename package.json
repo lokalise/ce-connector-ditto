@@ -1,5 +1,5 @@
 {
-  "name": "@lokalise/ditto-connector",
+  "name": "ditto-ce-connector",
   "private": true,
   "version": "1.0.0",
   "description": "Ditto connector for Lokalise Content type app engine",
@@ -11,6 +11,7 @@
     "test:coverage": "jest --coverage",
     "test:ci": "npm run copy:config && npm run lint && npm run test:coverage",
     "lint": "eslint .",
+    "lintfix": "eslint . --fix",
     "format": "prettier --write . && eslint . --fix",
     "start:dev": "nodemon",
     "prepublishOnly": "npm run build"

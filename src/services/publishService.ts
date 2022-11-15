@@ -1,5 +1,7 @@
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../types'
-import { updateVariants, VariantUpdateData } from './dittoService'
+
+import type { VariantUpdateData } from './dittoService'
+import { updateVariants } from './dittoService'
 
 const publishContent = async (
   config: IntegrationConfig,
@@ -9,7 +11,7 @@ const publishContent = async (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defaultLocale: string,
 ): Promise<[boolean | undefined, ItemIdentifiers[]]> => {
-  if (!String(auth.apiKey) || auth.apiKey === '') {
+  if (typeof auth.apiKey !== 'string') {
     return [undefined, []]
   }
   // implementation
@@ -28,7 +30,7 @@ const publishContent = async (
   }
 
   try {
-    await updateVariants(toUpdate, auth.apiKey as string)
+    await updateVariants(toUpdate, auth.apiKey)
 
     return [true, []]
   } catch (e) {

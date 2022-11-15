@@ -1,6 +1,4 @@
-import type { AuthConfig, IntegrationConfig } from 'src/types'
-
-const getLocales = async (config: IntegrationConfig, auth: AuthConfig) => {
+const getLocales = async () => {
   // The default locale will just map to the base text in Ditto
   return Promise.resolve({
     defaultLocale: 'base',
@@ -8,7 +6,7 @@ const getLocales = async (config: IntegrationConfig, auth: AuthConfig) => {
   })
 }
 
-const getCacheItemStructure = async (config: IntegrationConfig, auth: AuthConfig) => {
+const getCacheItemStructure = async () => {
   return Promise.resolve({
     folder: 'Folder',
   })

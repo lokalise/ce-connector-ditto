@@ -1,13 +1,20 @@
 import axios from 'axios'
+import type { IntegrationConfig } from 'src/types'
+
 import config from '../config'
-import type { PostAuthResultRequestPayload } from 'src/routes/auth/types'
-import type { AuthConfig, IntegrationConfig } from 'src/types'
 
 // API key flow
 const validate = async (integrationConfig: IntegrationConfig) => {
+  if (typeof integrationConfig.apiKey !== 'string') {
+    return undefined
+  }
+
   try {
     const res = await axios.get(`${config.app.dittoUrl}/components`, {
-      headers: { Authorization: `Bearer ${integrationConfig.apiKey}`, origin: 'lokalise' },
+      headers: {
+        Authorization: `Bearer ${integrationConfig.apiKey}`,
+        origin: 'lokalise',
+      },
     })
 
     if (res.status !== 200) {
@@ -15,7 +22,7 @@ const validate = async (integrationConfig: IntegrationConfig) => {
     }
 
     return {
-      key: 'apiKey',
+      apiKey: integrationConfig.apiKey,
     }
   } catch {
     return undefined
@@ -23,24 +30,22 @@ const validate = async (integrationConfig: IntegrationConfig) => {
 }
 
 // OAuth flow
-const generateAuthorizationUrl = async (config: IntegrationConfig) => {
-  // TODO: implementation
-  // response structure depends on auth strategy and platform specificity
+const generateAuthorizationUrl = async () => {
+  // OAuth not used
   return Promise.resolve({
     url: 'https://example.io',
   })
 }
 
-const refresh = async (config: IntegrationConfig, auth: AuthConfig) => {
-  // TODO: implementation
-  // response structure depends on auth strategy and platform specificity
+const refresh = async () => {
+  // OAuth not used
   return Promise.resolve({
     key: 'apiKey',
   })
 }
 
-const getAuthCredentials = async (authData: PostAuthResultRequestPayload) => {
-  // TODO: implementation
+const getAuthCredentials = async () => {
+  // OAuth not used
   return Promise.resolve({
     accessToken: 'accessToken',
     expiresIn: 2000,

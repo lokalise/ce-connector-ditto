@@ -6,7 +6,6 @@ import type {
 } from 'fastify'
 import fp from 'fastify-plugin'
 
-import { InternalError } from '../infrastructure/errors/InternalError'
 import { PublicNonRecoverableError } from '../infrastructure/errors/PublicNonRecoverableError'
 
 import { decodeBase64 } from './helpers'

@@ -1,9 +1,13 @@
+import type { Server, IncomingMessage, ServerResponse } from 'http'
+
 import axios from 'axios'
-import { FastifyInstance, FastifyBaseLogger, FastifyTypeProviderDefault } from 'fastify'
-import { Server, IncomingMessage, ServerResponse } from 'http'
-import getApp from 'src/app'
+import type { FastifyInstance, FastifyBaseLogger, FastifyTypeProviderDefault } from 'fastify'
+
+import getApp from '../../app'
 
 jest.mock('axios')
+
+const mockedAxios = axios as jest.Mocked<typeof axios>
 
 let app: FastifyInstance<
   Server,
@@ -19,8 +23,7 @@ beforeAll(async () => {
 
 describe('request the "/publish" route', () => {
   it('passes', async () => {
-    // @ts-ignore
-    axios.post.mockResolvedValue({
+    mockedAxios.post.mockResolvedValue({
       status: 200,
       data: {},
     })
