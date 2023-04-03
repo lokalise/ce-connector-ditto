@@ -12,7 +12,7 @@ const validate = async (integrationConfig: IntegrationConfig) => {
   try {
     const res = await axios.get(`${config.app.dittoUrl}/components`, {
       headers: {
-        Authorization: `Bearer ${integrationConfig.apiKey}`,
+        Authorization: `token ${integrationConfig.apiKey}`,
         origin: 'lokalise',
       },
     })

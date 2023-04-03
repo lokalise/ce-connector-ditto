@@ -1,7 +1,7 @@
 const getLocales = async () => {
   // The default locale will just map to the base text in Ditto
   return Promise.resolve({
-    defaultLocale: 'base',
+    defaultLocale: '',
     locales: [],
   })
 }
