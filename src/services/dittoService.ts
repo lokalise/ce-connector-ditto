@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import axios from 'axios'
 
 import config from '../config'
@@ -33,9 +34,13 @@ export type VariantUpdateData = Record<string, Record<string, { text: string }>>
 
 export const updateVariants = async (toUpdate: VariantUpdateData, apiKey: string) => {
   const updatePromises: Array<Promise<unknown>> = Object.entries(toUpdate).map(([variant, data]) =>
-    axios.put(`${config.app.dittoUrl}/components?variant=${variant}`, data, {
-      headers: { Authorization: `token ${apiKey}`, origin: 'lokalise' },
-    }),
+    axios.put(
+      `${config.app.dittoUrl}/components?variant=${variant}`,
+      { data },
+      {
+        headers: { Authorization: `token ${apiKey}`, origin: 'lokalise' },
+      },
+    ),
   )
 
   await Promise.all(updatePromises)
