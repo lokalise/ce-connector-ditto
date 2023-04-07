@@ -44,3 +44,14 @@ export class AuthFailedError extends PublicNonRecoverableError {
     })
   }
 }
+
+export class CouldNotRetrieveCacheItemsError extends PublicNonRecoverableError {
+  constructor(details?: Record<string, unknown>) {
+    super({
+      message: 'Could not retrieve cache items',
+      errorCode: 'COULD_NOT_RETRIEVE_CACHE_ITEMS',
+      httpStatusCode: 403,
+      details,
+    })
+  }
+}

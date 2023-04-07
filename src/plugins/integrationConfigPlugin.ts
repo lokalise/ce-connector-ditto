@@ -7,8 +7,7 @@ import type {
 import fp from 'fastify-plugin'
 
 import { PublicNonRecoverableError } from '../infrastructure/errors/PublicNonRecoverableError'
-
-import { decodeBase64 } from './helpers'
+import { decodeBase64 } from '../utils/base64Utils'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -21,8 +20,8 @@ interface PluginOptions {
   skipList: string[]
 }
 
-const AUTH_HEADER = 'CE-Auth'
-const CONFIG_HEADER = 'CE-Config'
+export const AUTH_HEADER = 'CE-Auth'.toLowerCase()
+export const CONFIG_HEADER = 'CE-Config'.toLowerCase()
 
 function plugin(
   fastify: FastifyInstance,
@@ -38,9 +37,7 @@ function plugin(
     'onRequest',
     (req: FastifyRequest, res: FastifyReply, done: HookHandlerDoneFunction) => {
       // Integration configuration
-      const integrationConfigHeaderData = req.headers[CONFIG_HEADER.toLowerCase()] as
-        | string
-        | undefined
+      const integrationConfigHeaderData = req.headers[CONFIG_HEADER] as string | undefined
       if (integrationConfigHeaderData) {
         const integrationConfigDecoded = decodeBase64(integrationConfigHeaderData)
         if (!integrationConfigDecoded) {
@@ -53,13 +50,12 @@ function plugin(
         }
         req.integrationConfig = integrationConfigDecoded
       }
-
       // Auth configuration
       if (resolvedSkipList.some((regex) => regex.test(req.routerPath))) {
         return done()
       }
 
-      const authConfigHeaderData = req.headers[AUTH_HEADER.toLowerCase()] as string | undefined
+      const authConfigHeaderData = req.headers[AUTH_HEADER] as string | undefined
       if (!authConfigHeaderData) {
         return done(
           new PublicNonRecoverableError({
@@ -78,7 +74,6 @@ function plugin(
           }),
         )
       }
-
       req.authConfig = authConfigDecoded
 
       return done()
@@ -88,9 +83,7 @@ function plugin(
   next()
 }
 
-const integrationConfigPlugin = fp<PluginOptions>(plugin, {
+export const integrationConfigPlugin = fp<PluginOptions>(plugin, {
   fastify: '4.x',
   name: 'auth-token-validator-plugin',
 })
-
-export default integrationConfigPlugin

@@ -1,0 +1,15 @@
+export class EnvService {
+  async getLocales() {
+    // The default locale will just map to the base text in Ditto
+    return Promise.resolve({
+      defaultLocale: '',
+      locales: [],
+    })
+  }
+
+  async getCacheItemStructure() {
+    return Promise.resolve({
+      folder: 'Folder',
+    })
+  }
+}
