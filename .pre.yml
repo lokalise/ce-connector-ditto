@@ -1,4 +1,4 @@
-name: ditto-ce-connector
+name: ce-connector-ditto
 jobs:
   - name: build-{{.PR}}
     node: build
@@ -10,8 +10,8 @@ jobs:
         variable: DOCKER_PASSWORD
     commands:
       - docker login -u lokalise -p ${DOCKER_PASSWORD} reg.lokalise.work
-      - docker build -f docker/Dockerfile -t reg.lokalise.work/ditto-ce-connector/app:PRE-{{.PR}} .
-      - docker push reg.lokalise.work/ditto-ce-connector/app:PRE-{{.PR}}
+      - docker build -f docker/Dockerfile -t reg.lokalise.work/ce-connector-ditto/app:PRE-{{.PR}} .
+      - docker push reg.lokalise.work/ce-connector-ditto/app:PRE-{{.PR}}
 
   - name: deploy-{{.PR}}
     node: ditto-{{.PR}}
@@ -40,7 +40,7 @@ jobs:
       upstream: deploy-main
     pipeline: |
       node("build") {
-        git(branch: 'main', credentialsId: 'lokalise-engineering', url: 'git@github.com:lokalise/ditto-ce-connector.git')
+        git(branch: 'main', credentialsId: 'lokalise-engineering', url: 'git@github.com:lokalise/ce-connector-ditto.git')
         properties([
           [$class: 'BuildBlockerProperty', useBuildBlocker: false],
           disableConcurrentBuilds(),

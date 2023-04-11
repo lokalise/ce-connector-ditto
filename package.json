@@ -1,5 +1,5 @@
 {
-  "name": "ditto-ce-connector",
+  "name": "ce-connector-ditto",
   "private": true,
   "version": "1.0.0",
   "description": "Ditto connector for Lokalise Content type app engine",
