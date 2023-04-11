@@ -1,0 +1,80 @@
+def REGISTRY_CREDENTIAL_ID = "DOCKER_REGISTRY"
+def CI_ENV_IMAGE           = "reg.lokalise.work/ci-env:v0"
+def NODE_TAG               = "lok-cteng-conn-${ENV}"
+def NORELEASE              = ""
+
+def tag
+def nodes = [:]
+
+  node('build') {
+    properties([
+      parameters([
+        choice(choices: ['stage', 'live'], name: 'ENV'),
+        gitParameter(name: 'TAG', type: 'PT_TAG', defaultValue: 'latest', sortMode: 'DESCENDING_SMART', selectedValue: 'TOP', listSize: '5'),
+        booleanParam(description: 'If checked, deploy to LIVE env will be skipped', name: 'NORELEASE'),
+      ]),
+      pipelineTriggers([githubPush()])
+    ])
+
+    stage("Checkout") {
+      checkout(scm)
+    }
+
+    stage("Job-info") {
+      currentBuild.displayName = "#${BUILD_NUMBER}-${ENV}"
+      currentBuild.description = "TAG: ${TAG}"
+    }
+  }
+
+  nodesByLabel(NODE_TAG).each {
+    nodes[it] = { ->
+      node(it) {
+        withCredentials([
+          usernamePassword(
+            credentialsId: REGISTRY_CREDENTIAL_ID,
+            usernameVariable: "REGISTRY_USER",
+            passwordVariable: "REGISTRY_PASSWORD"
+          )
+        ]) {
+          docker.image(CI_ENV_IMAGE).inside("--net=host -u root:root -v /var/run/docker.sock:/var/run/docker.sock") {
+            stage("Checkout") {
+              scmVars = checkout(scm)
+              currentBuild.displayName = "#${BUILD_NUMBER}-${ENV}"
+              currentBuild.description = "TAG: ${TAG}"
+            }
+            stage("Deploy @ ${it}") {
+              sh 'TAG=${TAG} ENV=${ENV} docker/scripts/deploy.sh'
+            }
+            stage("Healthcheck @ ${it}") {
+              sh 'TAG=${TAG} ENV=${ENV} docker/scripts/health.sh "http://localhost:3009/health" "200"'
+            }
+          }
+        }
+      }
+    }
+  }
+
+  parallel nodes
+
+  node('build') {
+    stage('Post-Deploy') {
+      if (ENV == 'live') {
+        withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+          sh 'TAG=${TAG} docker/scripts/release.sh git_release $(git rev-parse HEAD)'
+        }
+      } 
+      else {
+        withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+          sh 'TAG=${TAG} docker/scripts/release.sh check_norelease $(git rev-parse HEAD)'
+        }
+        withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+          echo "Promoting tag ${TAG} to the LIVE env..."
+          build job: 'promote', wait: false, parameters: [
+            [$class: 'StringParameterValue', name: 'TAG', value: "${TAG}"],
+            [$class: 'StringParameterValue', name: 'ENV', value: "live"],
+          ]
+        }
+      }
+    }
+  }
+

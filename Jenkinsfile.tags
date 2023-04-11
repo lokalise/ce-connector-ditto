@@ -1,0 +1,24 @@
+pipeline {
+  agent {
+    label 'build'
+  }
+
+  environment {
+    TAG = "${env.TAG_NAME}"
+  }
+
+  stages {
+    stage('Triggers build on tag push') {
+      when {
+        tag pattern: "\\d+", comparator: "REGEXP"
+      }
+      steps {
+        sh 'echo ${TAG}'
+        build job: '../promote', wait: false, parameters: [
+          [$class: 'StringParameterValue', name: 'TAG', value: "${TAG}"],
+          [$class: 'StringParameterValue', name: 'ENV', value: "stage"],
+          ]
+      }
+    }
+  }
+}
