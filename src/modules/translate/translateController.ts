@@ -15,14 +15,6 @@ export const getContent = async (
     req.body.items,
     req.body.defaultLocale,
   )
-  if (!items) {
-    await reply.status(403).send({
-      message: 'Could not retrieve content items',
-      statusCode: 403,
-      error: 'Invalid credentials',
-    })
-    return
-  }
 
   await reply.send({ items, updateItems })
 }

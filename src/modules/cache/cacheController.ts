@@ -6,14 +6,6 @@ export const getCache = async (req: FastifyRequest, reply: ListCacheResponse) =>
   const { cacheService } = req.diScope.cradle
   const items = await cacheService.listItems(req.integrationConfig, req.authConfig)
 
-  if (!items) {
-    await reply.status(403).send({
-      message: 'Could not retrieve cache items',
-      statusCode: 403,
-    })
-    return
-  }
-
   await reply.send({
     items,
   })
@@ -25,13 +17,6 @@ export const getCacheItems = async (
 ) => {
   const { cacheService } = req.diScope.cradle
   const items = await cacheService.getItems(req.integrationConfig, req.authConfig, req.body.items)
-  if (!items) {
-    await reply.status(403).send({
-      message: 'Could not retrieve cache items',
-      statusCode: 403,
-    })
-    return
-  }
 
   await reply.send({
     items,

@@ -10,7 +10,7 @@ export const publishRequestBody = z.object({
 export const publishResponseBody = z.object({
   status: z.number(),
   message: z.string(),
-  updateItems: z.array(itemIdentifiers),
+  updateItems: z.array(itemIdentifiers).optional(),
 })
 
 export type PublishRequestBodyType = z.infer<typeof publishRequestBody>

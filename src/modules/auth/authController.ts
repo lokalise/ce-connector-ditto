@@ -10,15 +10,8 @@ export const getAuth = async (req: FastifyRequest, reply: GetAuthResponse) => {
 
 export const postAuth = async (req: FastifyRequest, reply: PostAuthResponse) => {
   const { authService } = req.diScope.cradle
-  const authConfig = await authService.validate(req.integrationConfig)
 
-  if (!authConfig) {
-    await reply.status(403).send({
-      message: 'Could not authenticate to 3rd party using the provided key.',
-      statusCode: 403,
-    })
-    return
-  }
+  const authConfig = await authService.validate(req.integrationConfig)
 
   await reply.send(authConfig)
 }
@@ -27,14 +20,6 @@ export const postAuthRefresh = async (req: FastifyRequest, reply: PostAuthRefres
   const { authService } = req.diScope.cradle
 
   const authConfig = await authService.refresh(req.integrationConfig, req.authConfig)
-
-  if (!authConfig) {
-    await reply.status(403).send({
-      message: 'Could not authenticate to 3rd party using the provided key.',
-      statusCode: 403,
-    })
-    return
-  }
 
   return reply.send(authConfig)
 }

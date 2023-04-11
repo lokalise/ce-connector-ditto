@@ -4,6 +4,7 @@ import type { FastifyInstance } from 'fastify'
 import type P from 'pino'
 
 // import type { FakeIntegrationApiClient } from '../integrations/fakeIntegration/client/FakeIntegrationApiClient'
+import { APIDitto } from '../integrations/ditto/client/APIDitto'
 import { AuthService } from '../modules/auth/AuthService'
 import { CacheService } from '../modules/cache/CacheService'
 import { EnvService } from '../modules/env/EnvService'
@@ -30,7 +31,7 @@ export function registerDependencies(
     config: asFunction(() => {
       return getConfig()
     }, SINGLETON_CONFIG),
-    // fakeIntegrationApiClient: asClass(FakeIntegrationApiClient, SINGLETON_CONFIG),
+    dittoApiClient: asClass(APIDitto, SINGLETON_CONFIG),
     cacheService: asClass(CacheService, SINGLETON_CONFIG),
     authService: asClass(AuthService, SINGLETON_CONFIG),
     envService: asClass(EnvService, SINGLETON_CONFIG),
@@ -48,7 +49,7 @@ type DiConfig = Record<keyof Dependencies, Resolver<unknown>>
 
 export interface Dependencies {
   config: Config
-  // fakeIntegrationApiClient: FakeIntegrationApiClient
+  dittoApiClient: APIDitto
   cacheService: CacheService
   authService: AuthService
   envService: EnvService

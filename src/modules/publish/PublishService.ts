@@ -1,8 +1,15 @@
+import type { Dependencies } from '../../infrastructure/diConfig'
+import { AuthFailedError } from '../../infrastructure/errors/publicErrors'
+import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
 import type { VariantUpdateData } from '../../services/dittoService'
-import { updateVariants } from '../../services/dittoService'
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../../types'
 
 export class PublishService {
+  private readonly dittoApiClient: APIDitto
+  constructor({ dittoApiClient }: Dependencies) {
+    this.dittoApiClient = dittoApiClient
+  }
+
   async publishContent(
     config: IntegrationConfig,
     auth: AuthConfig,
@@ -11,12 +18,10 @@ export class PublishService {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     defaultLocale: string,
   ): Promise<[boolean | undefined, ItemIdentifiers[]]> {
-    if (typeof auth.apiKey !== 'string') {
-      return [undefined, []]
-    }
-    // implementation
-    if (items.length === 0) {
-      return [true, []]
+    const { apiKey } = auth
+
+    if (!apiKey || typeof apiKey !== 'string') {
+      throw new AuthFailedError()
     }
 
     const locales = Object.keys(items[0].translations)
@@ -29,13 +34,13 @@ export class PublishService {
       }
     }
 
-    try {
-      await updateVariants(toUpdate, auth.apiKey)
+    const updatePromises: Array<Promise<unknown>> = Object.entries(toUpdate).map(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      async ([variant, data]) => await this.dittoApiClient.updateVariant(apiKey, variant, { data }),
+    )
 
-      return [true, []]
-    } catch (e) {
-      console.error(e)
-      return [false, []]
-    }
+    await Promise.all(updatePromises)
+
+    return [true, []]
   }
 }

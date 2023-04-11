@@ -1,28 +1,30 @@
 import type { Dependencies } from '../../infrastructure/diConfig'
-import { CouldNotRetrieveCacheItemsError } from '../../infrastructure/errors/publicErrors'
-// import type { FakeIntegrationApiClient } from '../../integrations/fakeIntegration/client/FakeIntegrationApiClient'
-import { getWorkspaceComponents, parseName } from '../../services/dittoService'
+import { AuthFailedError } from '../../infrastructure/errors/publicErrors'
+import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
+import { parseName } from '../../services/dittoService'
 import type { AuthConfig, IntegrationConfig, ItemIdentifiers } from '../../types'
 
 export class CacheService {
-  // private readonly fakeApiClient: FakeIntegrationApiClient
-  // constructor({ fakeIntegrationApiClient }: Dependencies) {
-  //   this.fakeApiClient = fakeIntegrationApiClient
-  // }
+  private readonly dittoApiClient: APIDitto
+  constructor({ dittoApiClient }: Dependencies) {
+    this.dittoApiClient = dittoApiClient
+  }
 
   async listItems(integrationConfig: IntegrationConfig, auth: AuthConfig) {
-    if (typeof auth.apiKey !== 'string') {
-      return undefined
+    const { apiKey } = auth
+
+    if (!apiKey || typeof apiKey !== 'string') {
+      throw new AuthFailedError()
     }
 
-    const validatedData = await getWorkspaceComponents(auth.apiKey)
+    const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
-    if (!validatedData || !validatedData.success) {
-      console.error('Unexpected data from Ditto')
-      return undefined
-    }
+    // if (!validatedData || !validatedData.success) {
+    //   console.error('Unexpected data from Ditto')
+    //   return undefined
+    // }
 
-    return Object.entries(validatedData.data).map(([id, data]) => ({
+    return Object.entries(componentsByName).map(([id, data]) => ({
       uniqueId: id,
       groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
       metadata: {},
@@ -30,20 +32,22 @@ export class CacheService {
   }
 
   async getItems(config: IntegrationConfig, auth: AuthConfig, ids: ItemIdentifiers[]) {
-    if (typeof auth.apiKey !== 'string') {
-      return undefined
+    const { apiKey } = auth
+
+    if (!apiKey || typeof apiKey !== 'string') {
+      throw new AuthFailedError()
     }
 
-    const validatedData = await getWorkspaceComponents(auth.apiKey)
+    const validatedData = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
-    if (!validatedData || !validatedData.success) {
-      console.error('Unexpected data from Ditto')
-      return undefined
-    }
+    // if (!validatedData || !validatedData.success) {
+    //   console.error('Unexpected data from Ditto')
+    //   return undefined
+    // }
 
     const desiredIds = ids.map((id) => id.uniqueId)
-    const filteredWorkspaceComponentEntries = Object.entries(validatedData.data).filter(
-      ([wsCompId]) => desiredIds.includes(wsCompId),
+    const filteredWorkspaceComponentEntries = Object.entries(validatedData).filter(([wsCompId]) =>
+      desiredIds.includes(wsCompId),
     )
 
     return filteredWorkspaceComponentEntries.map(([id, data]) => {
