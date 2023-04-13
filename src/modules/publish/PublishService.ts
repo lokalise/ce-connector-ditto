@@ -1,8 +1,13 @@
+import type { InternalError } from '@lokalise/node-core'
+
 import type { Dependencies } from '../../infrastructure/diConfig'
-import { AuthFailedError } from '../../infrastructure/errors/publicErrors'
+import type { ErrorInfoWithPerLocaleErrors } from '../../infrastructure/errors/MultiStatusErrorResponse'
+import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/errors/publicErrors'
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
-import type { VariantUpdateData } from '../../services/dittoService'
-import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../../types'
+import type { VariantUpdateData } from '../../integrations/ditto/client/types'
+import { buildPerLocaleErrors, buildTranslatePublishError } from '../../integrations/ditto/mapper'
+import type { AuthConfig, ContentItem, IntegrationConfig } from '../../types'
+import { isRejected } from '../../types'
 
 export class PublishService {
   private readonly dittoApiClient: APIDitto
@@ -17,10 +22,16 @@ export class PublishService {
     // Default locale might not be needed for integration logic
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     defaultLocale: string,
-  ): Promise<[boolean | undefined, ItemIdentifiers[]]> {
+  ): Promise<{
+    errors: ErrorInfoWithPerLocaleErrors[]
+  }> {
+    const publishErrors: ErrorInfoWithPerLocaleErrors[] = []
     const { apiKey } = auth
 
-    if (!apiKey || typeof apiKey !== 'string') {
+    if (!apiKey) {
+      throw new AuthInvalidDataError()
+    }
+    if (typeof apiKey !== 'string') {
       throw new AuthFailedError()
     }
 
@@ -33,14 +44,36 @@ export class PublishService {
         toUpdate[locale][item.uniqueId] = { text: item.translations[locale] }
       }
     }
+    const toUpdateDataEntries = Object.entries(toUpdate)
 
-    const updatePromises: Array<Promise<unknown>> = Object.entries(toUpdate).map(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      async ([variant, data]) => await this.dittoApiClient.updateVariant(apiKey, variant, { data }),
+    const updatePromises: Array<Promise<unknown>> = toUpdateDataEntries.map(
+      async ([variant, data]) => this.dittoApiClient.updateVariant(apiKey, variant, { data }),
     )
 
-    await Promise.all(updatePromises)
+    const updateSettledResult = await Promise.allSettled(updatePromises)
 
-    return [true, []]
+    updateSettledResult.forEach((result, index) => {
+      const [variant, data] = toUpdateDataEntries[index]
+
+      if (isRejected(result) && variant) {
+        const uniqueIdsWithError = Object.keys(data)
+
+        uniqueIdsWithError.forEach((uniqueId) => {
+          const existingError = publishErrors.find((error) => error.uniqueId === uniqueId)
+          if (existingError) {
+            existingError.perLocaleErrors = {
+              ...existingError.perLocaleErrors,
+              ...buildPerLocaleErrors(result.reason as InternalError, variant),
+            }
+          } else {
+            publishErrors.push(
+              buildTranslatePublishError(result.reason as InternalError, uniqueId, variant),
+            )
+          }
+        })
+      }
+    })
+
+    return { errors: publishErrors }
   }
 }

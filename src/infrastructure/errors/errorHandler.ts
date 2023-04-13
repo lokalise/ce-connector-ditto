@@ -66,7 +66,10 @@ function resolveResponseObject(error: Record<string, any>): ResponseObject {
 
   return {
     statusCode: 500,
-    payload: 'Internal Server Error',
+    payload: {
+      message: 'Unrecognized error',
+      errorCode: 'UNRECOGNIZED_ERROR',
+    },
   }
 }
 
@@ -87,5 +90,5 @@ export const errorHandler = function (
   }
 
   this.log.error(logObject)
-  void reply.status(responseObject.statusCode).send(responseObject.payload)
+  void reply.status(responseObject.statusCode).send(responseObject)
 }

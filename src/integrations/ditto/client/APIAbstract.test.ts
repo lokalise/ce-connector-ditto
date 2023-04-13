@@ -57,8 +57,10 @@ describe('APIAbstract', () => {
       expect(mockRequest).toHaveBeenCalledWith({
         body: '{"foo":"bar"}',
         headers: {
-          ['api-key']: 'some-api-key',
+          Authorization: 'token some-api-key',
+          'Content-Type': 'application/json',
           header: 'fakeHeader',
+          origin: 'lokalise',
         },
         method: 'GET',
         path: 'https://fakeurl',
@@ -83,7 +85,12 @@ describe('APIAbstract', () => {
         expect.objectContaining({
           method: 'GET',
           path: 'https://fakeurl',
-          headers: { ['api-key']: 'some-api-key', header: 'fakeHeader' },
+          headers: {
+            Authorization: 'token some-api-key',
+            'Content-Type': 'application/json',
+            header: 'fakeHeader',
+            origin: 'lokalise',
+          },
           query: { query: 'fakeQuery' },
           body: '{"foo":"bar"}',
           throwOnError: true,
@@ -113,7 +120,12 @@ describe('APIAbstract', () => {
         expect.objectContaining({
           method: 'POST',
           path: 'https://fakeurl',
-          headers: { ['api-key']: 'some-api-key', header: 'fakeHeader' },
+          headers: {
+            Authorization: 'token some-api-key',
+            'Content-Type': 'application/json',
+            header: 'fakeHeader',
+            origin: 'lokalise',
+          },
           query: { query: 'fakeQuery' },
           body: '{"foo":"bar"}',
           throwOnError: true,

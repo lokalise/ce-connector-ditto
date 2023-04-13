@@ -1,7 +1,7 @@
 import type { Dependencies } from '../../infrastructure/diConfig'
-import { AuthFailedError } from '../../infrastructure/errors/publicErrors'
+import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/errors/publicErrors'
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
-import { parseName } from '../../services/dittoService'
+import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../../types'
 
 export class TranslateService {
@@ -21,16 +21,14 @@ export class TranslateService {
   ): Promise<[ContentItem[], ItemIdentifiers[]]> {
     const { apiKey } = auth
 
-    if (!apiKey || typeof apiKey !== 'string') {
+    if (!apiKey) {
+      throw new AuthInvalidDataError()
+    }
+    if (typeof apiKey !== 'string') {
       throw new AuthFailedError()
     }
 
     const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
-
-    // if (!validatedData || !validatedData.success) {
-    //   console.error('Unexpected data from Ditto')
-    //   return [undefined, []]
-    // }
 
     const desiredIds = ids.map((id) => id.uniqueId)
     const filteredWorkspaceComponentEntries = Object.entries(componentsByName).filter(

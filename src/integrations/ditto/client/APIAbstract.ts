@@ -19,6 +19,7 @@ export class APIAbstract {
     const finalHeaders = {
       Authorization: `token ${apiKey}`,
       origin: 'lokalise',
+      'Content-Type': 'application/json',
       ...headers,
     }
 
@@ -62,7 +63,6 @@ export class APIAbstract {
   }
 
   public async put<R>(url: string, req: ApiRequest): Promise<R> {
-    console.log(req, 'reqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreqreq')
     try {
       return await this.send<R>('PUT', url, req)
     } catch (error) {
@@ -78,7 +78,6 @@ export class APIAbstract {
   }
 
   private handleError(error: errors.ResponseStatusCodeError): never {
-    console.log(error, 'error')
     if (error.statusCode === 401) {
       throw new AuthFailedError()
     }

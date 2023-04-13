@@ -9,8 +9,16 @@ export const translateRequestBody = z.object({
 })
 
 export const translateResponseBody = z.object({
+  statusCode: z.number().optional(),
   items: z.array(contentItem),
-  updateItems: z.array(itemIdentifiers),
+  payload: z
+    .object({
+      message: z.string(),
+      errorCode: z.string(),
+      details: z.object({
+        errors: z.array(z.object({}).passthrough()),
+      }),
+    })
+    .optional(),
+  updateItems: z.array(itemIdentifiers).optional(),
 })
-
-export type TranslateRequestBodyType = z.infer<typeof translateRequestBody>

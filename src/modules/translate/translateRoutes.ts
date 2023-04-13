@@ -1,4 +1,3 @@
-import { apiError } from '../commonSchemas'
 import type { Routes } from '../commonTypes'
 
 import { getContent } from './translateController'
@@ -13,7 +12,6 @@ export const translateRouteDefinition: Routes = [
       body: translateRequestBody,
       response: {
         200: translateResponseBody,
-        403: apiError,
       },
     },
   },

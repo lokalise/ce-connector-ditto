@@ -13,7 +13,17 @@ export const listCacheResponseBody = z.object({
 })
 
 export const cacheResponseBody = z.object({
+  statusCode: z.number().optional(),
   items: z.array(cacheItem),
+  payload: z
+    .object({
+      message: z.string(),
+      errorCode: z.string(),
+      details: z.object({
+        errors: z.array(z.object({}).passthrough()),
+      }),
+    })
+    .optional(),
 })
 
 export const cacheRequestBody = z.object({

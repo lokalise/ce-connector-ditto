@@ -1,5 +1,7 @@
 import type { FastifyRequest } from 'fastify'
 
+import { MultiStatusErrorCode } from '../../infrastructure/errors/MultiStatusErrorResponse'
+
 import type { PublishRequestBody, PublishResponse } from './publishTypes'
 
 export const publishContent = async (
@@ -7,15 +9,28 @@ export const publishContent = async (
   reply: PublishResponse,
 ) => {
   const { publishService } = req.diScope.cradle
-  await publishService.publishContent(
+  const { errors } = await publishService.publishContent(
     req.integrationConfig,
     req.authConfig,
     req.body.items,
     req.body.defaultLocale,
   )
 
-  await reply.send({
-    status: 200,
-    message: 'Content successfully updated',
-  })
+  if (errors.length) {
+    await reply.code(207).send({
+      statusCode: 207,
+      payload: {
+        message: 'Some items were not fetched',
+        errorCode: MultiStatusErrorCode,
+        details: {
+          errors,
+        },
+      },
+    })
+  } else {
+    await reply.send({
+      statusCode: 200,
+      message: 'Content successfully updated',
+    })
+  }
 }

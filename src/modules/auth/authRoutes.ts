@@ -1,4 +1,3 @@
-import { apiError } from '../commonSchemas'
 import type { Routes } from '../commonTypes'
 
 import { getAuth, postAuth, postAuthRefresh } from './authController'
@@ -22,7 +21,6 @@ export const authRouteDefinition: Routes = [
     schema: {
       response: {
         200: postAuthResponseBody,
-        403: apiError,
       },
     },
   },
@@ -33,7 +31,6 @@ export const authRouteDefinition: Routes = [
     schema: {
       response: {
         200: postAuthResponseBody,
-        403: apiError,
       },
     },
   },

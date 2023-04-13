@@ -12,46 +12,42 @@ export type OptionalMessageErrorParams = {
   details?: Record<string, any>
 }
 
-export class EntityNotFoundError extends PublicNonRecoverableError {
-  constructor(params: CommonErrorParams) {
-    super({
-      message: params.message,
-      errorCode: 'ENTITY_NOT_FOUND',
-      httpStatusCode: 404,
-      details: params.details,
-    })
-  }
-}
-
-export class EmptyTokenError extends PublicNonRecoverableError {
-  constructor(params: OptionalMessageErrorParams = {}) {
-    super({
-      message: params.message ?? 'Empty token',
-      errorCode: 'EMPTY_TOKEN',
-      httpStatusCode: 401,
-      details: params.details,
-    })
-  }
-}
-
 export class AuthFailedError extends PublicNonRecoverableError {
   constructor(params: OptionalMessageErrorParams = {}) {
     super({
-      message: params.message ?? 'Authentication failed',
-      errorCode: 'AUTH_FAILED',
+      message: params.message ?? 'Authorization failed',
+      errorCode: 'AUTH_FAILED_ERROR',
       httpStatusCode: 401,
-      details: params.details,
+      details: {
+        error: 'Invalid api key',
+      },
     })
   }
 }
 
-export class CouldNotRetrieveCacheItemsError extends PublicNonRecoverableError {
-  constructor(details?: Record<string, unknown>) {
+export class AuthInvalidDataError extends PublicNonRecoverableError {
+  constructor(params: OptionalMessageErrorParams = {}) {
     super({
-      message: 'Could not retrieve cache items',
-      errorCode: 'COULD_NOT_RETRIEVE_CACHE_ITEMS',
-      httpStatusCode: 403,
-      details,
+      message: params.message ?? 'Invalid authentication data',
+      errorCode: 'AUTH_INVALID_DATA_ERROR',
+      httpStatusCode: 400,
+      details: {
+        errors: [
+          {
+            apiKey: ['The apiKey should not be empty'],
+          },
+        ],
+      },
+    })
+  }
+}
+
+export class UnrecognizedError extends PublicNonRecoverableError {
+  constructor(params: OptionalMessageErrorParams = {}) {
+    super({
+      message: params.message ?? 'Unrecognized error',
+      errorCode: 'UNRECOGNIZED_ERROR',
+      httpStatusCode: 500,
     })
   }
 }

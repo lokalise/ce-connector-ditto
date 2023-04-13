@@ -1,7 +1,7 @@
 import type { Dependencies } from '../../infrastructure/diConfig'
-import { AuthFailedError } from '../../infrastructure/errors/publicErrors'
+import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/errors/publicErrors'
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
-import { parseName } from '../../services/dittoService'
+import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, IntegrationConfig, ItemIdentifiers } from '../../types'
 
 export class CacheService {
@@ -13,16 +13,14 @@ export class CacheService {
   async listItems(integrationConfig: IntegrationConfig, auth: AuthConfig) {
     const { apiKey } = auth
 
-    if (!apiKey || typeof apiKey !== 'string') {
+    if (!apiKey) {
+      throw new AuthInvalidDataError()
+    }
+    if (typeof apiKey !== 'string') {
       throw new AuthFailedError()
     }
 
     const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
-
-    // if (!validatedData || !validatedData.success) {
-    //   console.error('Unexpected data from Ditto')
-    //   return undefined
-    // }
 
     return Object.entries(componentsByName).map(([id, data]) => ({
       uniqueId: id,
@@ -34,20 +32,18 @@ export class CacheService {
   async getItems(config: IntegrationConfig, auth: AuthConfig, ids: ItemIdentifiers[]) {
     const { apiKey } = auth
 
-    if (!apiKey || typeof apiKey !== 'string') {
+    if (!apiKey) {
+      throw new AuthInvalidDataError()
+    }
+    if (typeof apiKey !== 'string') {
       throw new AuthFailedError()
     }
 
-    const validatedData = await this.dittoApiClient.getWorkspaceComponents(apiKey)
-
-    // if (!validatedData || !validatedData.success) {
-    //   console.error('Unexpected data from Ditto')
-    //   return undefined
-    // }
+    const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
     const desiredIds = ids.map((id) => id.uniqueId)
-    const filteredWorkspaceComponentEntries = Object.entries(validatedData).filter(([wsCompId]) =>
-      desiredIds.includes(wsCompId),
+    const filteredWorkspaceComponentEntries = Object.entries(componentsByName).filter(
+      ([wsCompId]) => desiredIds.includes(wsCompId),
     )
 
     return filteredWorkspaceComponentEntries.map(([id, data]) => {

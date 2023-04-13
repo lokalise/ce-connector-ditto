@@ -35,7 +35,10 @@ describe('errorHandler', () => {
     const response = await app.inject().get('/').end()
 
     expect(response.statusCode).toBe(500)
-    expect(response.body).toBe('Internal Server Error')
+    expect(response.json()).toEqual({
+      statusCode: 500,
+      payload: { message: 'Unrecognized error', errorCode: 'UNRECOGNIZED_ERROR' },
+    })
   })
 
   it('returns correct response for PublicNonRecoverableError', async () => {
@@ -47,9 +50,14 @@ describe('errorHandler', () => {
 
     expect(response.statusCode).toBe(401)
     expect(response.json()).toEqual({
-      message: 'Auth failed',
-      errorCode: 'AUTH_FAILED',
-      details: { userId: 4 },
+      payload: {
+        details: {
+          error: 'Invalid api key',
+        },
+        errorCode: 'AUTH_FAILED_ERROR',
+        message: 'Auth failed',
+      },
+      statusCode: 401,
     })
   })
 
@@ -65,6 +73,9 @@ describe('errorHandler', () => {
     const response = await app.inject().get('/').end()
 
     expect(response.statusCode).toBe(500)
-    expect(response.body).toBe('Internal Server Error')
+    expect(response.json()).toEqual({
+      statusCode: 500,
+      payload: { message: 'Unrecognized error', errorCode: 'UNRECOGNIZED_ERROR' },
+    })
   })
 })

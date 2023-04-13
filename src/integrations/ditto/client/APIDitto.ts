@@ -1,21 +1,50 @@
+import { buildClient, sendGet, sendPut } from '@lokalise/node-core'
+import type { Client } from 'undici'
+
 import type { Dependencies } from '../../../infrastructure/diConfig'
+import { AuthFailedError, UnrecognizedError } from '../../../infrastructure/errors/publicErrors'
 
-import { APIAbstract } from './APIAbstract'
-import type { UpdateVariantRequestBody, WorkspaceComponentsByName } from './types'
+import type {
+  UpdateVariantRequestBody,
+  UpdateVariantResult,
+  WorkspaceComponentsByName,
+} from './types'
 
-export class APIDitto extends APIAbstract {
+export class APIDitto {
+  private readonly client: Client
+
   constructor({ config }: Dependencies) {
     const host = config.integrations.ditto.baseUrl
     if (!host) {
       throw new Error('Ditto API path not provided')
     }
-    super(host)
+    this.client = buildClient(host, {
+      bodyTimeout: 5000,
+      headersTimeout: 5000,
+    })
+  }
+
+  private extractHeaders(apiKey: string) {
+    return {
+      Authorization: `token ${apiKey}`,
+      origin: 'lokalise',
+      'Content-Type': 'application/json',
+    }
   }
 
   public async getWorkspaceComponents(apiKey: string) {
-    return this.get<WorkspaceComponentsByName>('/components', {
-      apiKey,
+    const response = await sendGet<WorkspaceComponentsByName>(this.client, '/components', {
+      headers: this.extractHeaders(apiKey),
+      throwOnError: false,
     })
+
+    if (response.error) {
+      if (response.error.statusCode === 401) {
+        throw new AuthFailedError()
+      }
+      throw new UnrecognizedError()
+    }
+    return response.result.body
   }
 
   public async updateVariant(
@@ -23,11 +52,17 @@ export class APIDitto extends APIAbstract {
     variant: string,
     updateVariantPayload: UpdateVariantRequestBody,
   ) {
-    console.log(updateVariantPayload, 'updateVariantPayload!!!!!!!!!!!!!!!!!!!!1')
-    return this.put<any>('/components', {
-      apiKey,
-      body: updateVariantPayload,
-      query: { variant },
-    })
+    const response = await sendPut<UpdateVariantResult>(
+      this.client,
+      '/components',
+      updateVariantPayload,
+      {
+        headers: this.extractHeaders(apiKey),
+        query: { variant },
+        throwOnError: true,
+      },
+    )
+
+    return response.result.body
   }
 }

@@ -1,4 +1,3 @@
-import { apiError } from '../commonSchemas'
 import type { Routes } from '../commonTypes'
 
 import { getEnv } from './envController'
@@ -12,7 +11,6 @@ export const envRouteDefinition: Routes = [
     schema: {
       response: {
         200: envResponseBody,
-        403: apiError,
       },
     },
   },

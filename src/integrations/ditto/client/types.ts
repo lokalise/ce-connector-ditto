@@ -33,6 +33,11 @@ export type WorkspaceComponent = {
 
 export type WorkspaceComponentsByName = Record<string, WorkspaceComponent>
 
+export type UpdateVariantResult = {
+  componentsUpdated: number
+  componentsSkipped: number
+}
+
 export type ErrorResponse = {
   body: {
     code: string
@@ -47,3 +52,11 @@ export const isErrorResponse = (data: unknown): data is ErrorResponse =>
   'code' in data.body &&
   'msg' in data.body &&
   isString(data.body.msg)
+
+export type VariantUpdateData = Record<string, Record<string, { text: string }>>
+
+export type DittoError = {
+  body: string
+  headers: Record<string, unknown>
+  statusCode: number
+}

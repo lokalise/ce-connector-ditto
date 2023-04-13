@@ -1,4 +1,3 @@
-import { apiError } from '../commonSchemas'
 import type { Routes } from '../commonTypes'
 
 import { getCache, getCacheItems } from './cacheController'
@@ -12,7 +11,6 @@ export const cacheRouteDefinition: Routes = [
     schema: {
       response: {
         200: listCacheResponseBody,
-        403: apiError,
       },
     },
   },
@@ -24,7 +22,6 @@ export const cacheRouteDefinition: Routes = [
       body: cacheRequestBody,
       response: {
         200: cacheResponseBody,
-        403: apiError,
       },
     },
   },

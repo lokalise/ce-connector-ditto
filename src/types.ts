@@ -13,3 +13,9 @@ export const hasMessage = (error: unknown): error is { message: unknown } =>
 
 export type IntegrationConfig = Record<string, unknown>
 export type AuthConfig = Record<string, unknown>
+
+export const isRejected = (input: PromiseSettledResult<unknown>): input is PromiseRejectedResult =>
+  input.status === 'rejected'
+export const isFulfilled = <T>(
+  input: PromiseSettledResult<T>,
+): input is PromiseFulfilledResult<T> => input.status === 'fulfilled'
