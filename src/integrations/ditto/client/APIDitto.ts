@@ -10,6 +10,13 @@ import type {
   WorkspaceComponentsByName,
 } from './types'
 
+const retryConfig = {
+  maxAttempts: 3,
+  delayBetweenAttemptsInMsecs: 100,
+  statusCodesToRetry: [500, 502, 503],
+  retryOnTimeout: false,
+}
+
 export class APIDitto {
   private readonly client: Client
 
@@ -32,20 +39,11 @@ export class APIDitto {
     }
   }
 
-  private extractRetryConfig() {
-    return {
-      maxAttempts: 3,
-      delayBetweenAttemptsInMsecs: 100,
-      statusCodesToRetry: [500, 502, 503],
-      retryOnTimeout: false,
-    }
-  }
-
   public async getWorkspaceComponents(apiKey: string) {
     const response = await sendGet<WorkspaceComponentsByName>(this.client, '/components', {
       headers: this.extractHeaders(apiKey),
       throwOnError: false,
-      retryConfig: this.extractRetryConfig(),
+      retryConfig,
     })
 
     if (response.error) {
@@ -70,7 +68,7 @@ export class APIDitto {
         headers: this.extractHeaders(apiKey),
         query: { variant },
         throwOnError: true,
-        retryConfig: this.extractRetryConfig(),
+        retryConfig,
       },
     )
 
