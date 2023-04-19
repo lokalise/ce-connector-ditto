@@ -28,5 +28,5 @@ RUN touch /var/log/node.log && \
 
 ENV PM2_WORKERS_NUMBER=max
 
-CMD /usr/local/lib/node_modules/pm2/bin/pm2-runtime start /srv/server.js -i $PM2_WORKERS_NUMBER
+CMD /usr/local/lib/node_modules/pm2/bin/pm2-runtime start /srv/src/server.js -i $PM2_WORKERS_NUMBER
 
