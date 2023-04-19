@@ -6,7 +6,7 @@ In its current state, this connector enables users to import their workspace's c
 
 ## Running
 
-Add .env file to your project root directory based on `docker/.env.default`.
+Add .env file to your project root directory based on `docker/.env.default` but with NODE_ENV changed to development.
 
 If needed, update host ports starting `HOST_*`
 
