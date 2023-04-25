@@ -27,6 +27,8 @@ export type WorkspaceComponent = {
   name: string
   text: string
   status: string
+  notes?: string
+  tags?: string[]
   folder: string
   variants: Record<string, Variant>
 }
