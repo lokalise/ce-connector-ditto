@@ -57,7 +57,7 @@ export class CacheService {
           folder: data.folder || '',
           status: data.status || '',
           notes: data.notes || '',
-          tags: data.tags.join(" ") || '',
+          tags: data.tags?.join(" ") || '',
         },
         title: parsedName.name,
         groupTitle: parsedName.groupName || 'Other components',
