@@ -6,13 +6,30 @@ In its current state, this connector enables users to import their workspace's c
 
 ## Running
 
-Add .env file to your project root directory based on .env.default.
+Add .env file to your project root directory based on `docker/.env.default` but with NODE_ENV changed to development.
+
+If needed, update host ports starting `HOST_*`
 
 For development, use the dockerized environment:
 
 `docker compose up -d`
 
 The app is available at: http://localhost:3000/
+
+We recommend the following settings to avoid port conflicts when working with the Content Engine locally:
+
+```
+HOST_APP_PORT=3488
+HOST_PRIVATE_APP_PORT=9088
+```
+
+Make sure that the `/node_modules` folder is not empty.
+If that's the case, you can execute the following .
+
+```
+ docker compose exec -it app npm install
+ make sync-modules
+```
 
 Run tests:
 

@@ -1,3 +1,5 @@
+import type { NotifiableError } from '@bugsnag/js'
+import { reportErrorToBugsnag } from '@lokalise/fastify-extras'
 import type { FastifyRequest, FastifyReply, FastifyInstance } from 'fastify'
 import pino from 'pino'
 import { ZodError } from 'zod'
@@ -64,7 +66,10 @@ function resolveResponseObject(error: Record<string, any>): ResponseObject {
 
   return {
     statusCode: 500,
-    payload: 'Internal Server Error',
+    payload: {
+      message: 'Unrecognized error',
+      errorCode: 'UNRECOGNIZED_ERROR',
+    },
   }
 }
 
@@ -78,6 +83,12 @@ export const errorHandler = function (
   const logObject = resolveLogObject(error)
   const responseObject = resolveResponseObject(error)
 
+  if (responseObject.statusCode === 500) {
+    reportErrorToBugsnag({
+      error: error as NotifiableError,
+    })
+  }
+
   this.log.error(logObject)
-  void reply.status(responseObject.statusCode).send(responseObject.payload)
+  void reply.status(responseObject.statusCode).send(responseObject)
 }

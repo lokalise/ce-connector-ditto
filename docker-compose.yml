@@ -4,7 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile-dev
     ports:
-      - 3009:3000
+      - '${HOST_APP_PORT}:3000'
+      - '${HOST_PRIVATE_APP_PORT}:9080'
     volumes:
       - ./:/app/
       - /app/node_modules

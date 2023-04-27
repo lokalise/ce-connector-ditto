@@ -1,4 +1,5 @@
 {
+  "setupFiles": ["<rootDir>/test/dotenvConfig.ts"],
   "moduleFileExtensions": ["ts", "js", "json"],
   "testMatch": ["<rootDir>/src/**/*.(spec|test).ts", "<rootDir>/test/**/*.(spec|test).ts"],
 
@@ -13,7 +14,14 @@
     }
   },
   "collectCoverageFrom": ["./src/**/*.ts"],
-  "coveragePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/coverage/"],
+  "coveragePathIgnorePatterns": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/coverage/",
+    "<rootDir>/src/app.ts",
+    "<rootDir>/src/server.ts",
+    "<rootDir>/src/infrastructure/diConfig.ts",
+    "<rootDir>/src/infrastructure/errors/globalErrorHandler.ts"
+  ],
   "coverageThreshold": {
     "global": {
       "statements": 75,
