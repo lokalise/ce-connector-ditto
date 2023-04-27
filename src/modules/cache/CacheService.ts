@@ -51,13 +51,16 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || id,
+        groupId: parsedName.groupName?.replaceAll(' ', '') || "Other components",
         metadata: {},
         fields: {
           folder: data.folder || '',
+          status: data.status || '',
+          notes: data.notes || '',
+          tags: data.tags?.join(" ") || '',
         },
         title: parsedName.name,
-        groupTitle: parsedName.groupName || 'No group',
+        groupTitle: parsedName.groupName || 'Other components',
       }
     })
   }

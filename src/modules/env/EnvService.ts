@@ -10,6 +10,9 @@ export class EnvService {
   async getCacheItemStructure() {
     return Promise.resolve({
       folder: 'Folder',
+      status: 'Status',
+      notes: 'Notes',
+      tags: 'Tags',
     })
   }
 }
