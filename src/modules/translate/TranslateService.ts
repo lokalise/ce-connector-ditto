@@ -49,7 +49,7 @@ export class TranslateService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || id,
+        groupId: parsedName.groupName?.replaceAll(' ', '').replaceAll('other-components', '') || id,
         metadata: {},
         translations: {
           ...localTexts,

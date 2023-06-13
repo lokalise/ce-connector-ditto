@@ -27,7 +27,7 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || id,
+        groupId: parsedName.groupName?.replaceAll(' ', '').replaceAll('other-components', '') || id,
         metadata: {},
       }
     })
@@ -55,7 +55,7 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || 'Other components',
+        groupId: parsedName.groupName?.replaceAll(' ', '') || 'other-components',
         metadata: {},
         fields: {
           folder: data.folder || '',
