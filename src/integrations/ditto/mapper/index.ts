@@ -43,7 +43,7 @@ export const buildPerLocaleErrors = (
 }
 
 export const parseName = (name: string) => {
-  if (!name.includes('/')) {
+  if (!name.includes('/') || name.includes('Other components')) {
     return { groupName: null, name }
   }
 
