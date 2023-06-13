@@ -22,11 +22,15 @@ export class CacheService {
 
     const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
-    return Object.entries(componentsByName).map(([id, data]) => ({
-      uniqueId: id,
-      groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
-      metadata: {},
-    }))
+    return Object.entries(componentsByName).map(([id, data]) => {
+      const parsedName = parseName(data.name)
+
+      return {
+        uniqueId: id,
+        groupId: parsedName.groupName?.replaceAll(' ', '') || id,
+        metadata: {},
+      }
+    })
   }
 
   async getItems(config: IntegrationConfig, auth: AuthConfig, ids: ItemIdentifiers[]) {
@@ -51,7 +55,7 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || '',
+        groupId: parsedName.groupName?.replaceAll(' ', '') || id,
         metadata: {},
         fields: {
           folder: data.folder || '',

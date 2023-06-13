@@ -37,7 +37,7 @@ export class TranslateService {
 
     const items = filteredWorkspaceComponentEntries.map(([id, data]) => {
       const localTexts = locales.reduce((acc, local) => {
-        if (data.variants && data.variants[local]) {
+        if (data.variants?.[local]) {
           acc[local] = data.variants[local].text
         } else {
           acc[local] = ''
@@ -45,10 +45,11 @@ export class TranslateService {
 
         return acc
       }, {} as Record<string, string>)
+      const parsedName = parseName(data.name)
 
       return {
         uniqueId: id,
-        groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
+        groupId: parsedName.groupName?.replaceAll(' ', '') || id,
         metadata: {},
         translations: {
           ...localTexts,
