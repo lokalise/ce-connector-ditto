@@ -51,7 +51,7 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || 'debug',
+        groupId: parsedName.groupName?.replaceAll(' ', '') || '',
         metadata: {},
         fields: {
           folder: data.folder || '',
