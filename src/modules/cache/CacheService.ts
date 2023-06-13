@@ -60,7 +60,7 @@ export class CacheService {
           tags: data.tags?.join(' ') || '',
         },
         title: parsedName.name,
-        groupTitle: parsedName.groupName || 'Other components',
+        groupTitle: parsedName.groupName || '',
       }
     })
   }
