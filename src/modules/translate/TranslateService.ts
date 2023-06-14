@@ -3,6 +3,7 @@ import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/erro
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
 import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../../types'
+import { OTHER_COMPONENTS_GROUP } from '../../utils/constants'
 
 export class TranslateService {
   private readonly dittoApiClient: APIDitto
@@ -49,7 +50,7 @@ export class TranslateService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || 'other-components',
+        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
         metadata: {},
         translations: {
           ...localTexts,
