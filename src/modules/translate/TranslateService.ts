@@ -3,6 +3,7 @@ import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/erro
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
 import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../../types'
+import { OTHER_COMPONENTS_GROUP } from '../../utils/constants'
 
 export class TranslateService {
   private readonly dittoApiClient: APIDitto
@@ -37,7 +38,7 @@ export class TranslateService {
 
     const items = filteredWorkspaceComponentEntries.map(([id, data]) => {
       const localTexts = locales.reduce((acc, local) => {
-        if (data.variants && data.variants[local]) {
+        if (data.variants?.[local]) {
           acc[local] = data.variants[local].text
         } else {
           acc[local] = ''
@@ -45,10 +46,11 @@ export class TranslateService {
 
         return acc
       }, {} as Record<string, string>)
+      const parsedName = parseName(data.name)
 
       return {
         uniqueId: id,
-        groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
+        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
         metadata: {},
         translations: {
           ...localTexts,
