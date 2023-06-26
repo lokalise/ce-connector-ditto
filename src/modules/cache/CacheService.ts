@@ -53,6 +53,11 @@ export class CacheService {
 
     return filteredWorkspaceComponentEntries.map(([id, data]) => {
       const parsedName = parseName(data.name)
+      let groupTitle = parsedName.groupName || 'Other components';
+
+      if (data.folder) {
+        groupTitle = data.folder + "/" + groupTitle
+      }
 
       return {
         uniqueId: id,
@@ -65,7 +70,7 @@ export class CacheService {
           tags: data.tags?.join(' ') || '',
         },
         title: parsedName.name,
-        groupTitle: parsedName.groupName || 'Other components',
+        groupTitle: groupTitle,
       }
     })
   }
