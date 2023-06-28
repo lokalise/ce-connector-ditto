@@ -25,9 +25,9 @@ create_git_tag() {
 }
 
 retag_and_push_image() {
-    IMAGE="${LOKALISE_REGISTRY}/${GIT_REPO_NAME}/${APP_NAME}"
+    IMAGE="${LOKALISE_ECR_REGISTRY}/${GIT_REPO_NAME}/${APP_NAME}"
 
-    log "Retaging image with ${IMAGE}:${TAG}"
+    log "Retaging ECR image with ${IMAGE}:${TAG}"
 
     docker pull ${IMAGE}:PRE-${GIT_BASE_BRANCH}
     docker tag ${IMAGE}:PRE-${GIT_BASE_BRANCH} ${IMAGE}:${TAG}
