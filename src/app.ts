@@ -1,6 +1,7 @@
 import type http from 'http'
 
 import { diContainer, fastifyAwilixPlugin } from '@fastify/awilix'
+import { fastifyCors } from '@fastify/cors'
 import {
   bugsnagPlugin,
   getRequestIdFastifyAppConfig,
@@ -111,6 +112,18 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
       releaseStage: appConfig.appEnv,
       appVersion: appConfig.appVersion,
     },
+  })
+
+  await app.register(fastifyCors, {
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Accept', 'Content-Type', 'Authorization'],
+    exposedHeaders: [
+      'Access-Control-Allow-Origin',
+      'Access-Control-Allow-Methods',
+      'Access-Control-Allow-Headers',
+    ],
   })
 
   if (!isDevelopment()) {
