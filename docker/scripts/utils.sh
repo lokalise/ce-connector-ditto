@@ -5,6 +5,7 @@ set -o pipefail
 REQUIRED_EXECUTABLES=(curl docker docker-compose jq vault)
 DOCKER_ROOT_PATH=${DOCKER_ROOT_PATH:-docker}
 LOKALISE_REGISTRY="reg.lokalise.work"
+LOKALISE_ECR_REGISTRY="053497547689.dkr.ecr.eu-central-1.amazonaws.com"
 REGISTRY_USER="lokalise"
 
 

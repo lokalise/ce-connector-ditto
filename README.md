@@ -4,6 +4,9 @@ This repository contains the code for Ditto's content engine connector on the Lo
 
 In its current state, this connector enables users to import their workspace's components to be translated within Lokalise. The Ditto integration is still in the process of being added to Lokalise's app marketplace so setup instructions will be added in the future.
 
+## Maintainers
+ [The MAX squad](https://lokalise.atlassian.net/wiki/spaces/PDE/pages/2501345749/MAX+Squad+-+Marketing+Persona+Experience).
+
 ## Tech stack:
 
 - Docker
@@ -49,6 +52,6 @@ Run linter:
 
 `docker compose exec -it app npm run lint`
 
-## Openapi
+## OpenAPI
 
 Openapi docs are available at [connector-openapi](https://github.com/lokalise/connector-openapi/blob/master/postman/schemas/schema.yaml)
