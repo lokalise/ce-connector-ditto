@@ -79,8 +79,8 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
     logLevel: 'warn',
     info: {
       env: appConfig.nodeEnv,
-      app_version: appConfig.appVersion,
-      git_commit_sha: appConfig.gitCommitSha,
+      appVersion: appConfig.appVersion,
+      gitCommitSha: appConfig.gitCommitSha,
     },
     schema: false,
     exposeFailure: false,
