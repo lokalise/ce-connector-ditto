@@ -7,6 +7,12 @@ In its current state, this connector enables users to import their workspace's c
 ## Maintainers
  [The MAX squad](https://lokalise.atlassian.net/wiki/spaces/PDE/pages/2501345749/MAX+Squad+-+Marketing+Persona+Experience).
 
+## Tech stack:
+
+- Docker
+- Typescript
+- Fastify
+
 ## Running
 
 Add .env file to your project root directory based on `docker/.env.default` but with NODE_ENV changed to development.

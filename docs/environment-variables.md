@@ -26,6 +26,9 @@ In production you are expected to set environment variables during deployment (e
 - (OPTIONAL) `NEW_RELIC_LICENSE_KEY` - New Relic API key
 - (OPTIONAL) `NEW_RELIC_APP_NAME` - instrumented application name for New Relic grouping purposes
 - (OPTIONAL) `NEW_RELIC_ENABLED` - whether to use New Relic instrumentation (`true`)
+- (OPTIONAL) `NEW_RELIC_LOG_ENABLED` - enables or disables agent specific logging
+- (OPTIONAL) `NEW_RELIC_LOG_LEVEL` - defines the level of detail recorded in the agent logs
+- (OPTIONAL) `NEW_RELIC_LOG` - complete path to the New Relic agent log, including the filename
 
 ### bugsnag
 
