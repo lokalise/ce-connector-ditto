@@ -123,8 +123,8 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
 
       const hostname = new URL(origin).hostname
 
-			// CE pass-through
-			if (hostname.includes('cteng')) {
+      // CE pass-through
+      if (hostname.endsWith('.lokalise.cloud')) {
         cb(null, true)
         return
       }
