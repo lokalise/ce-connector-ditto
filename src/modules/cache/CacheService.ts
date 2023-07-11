@@ -63,6 +63,7 @@ export class CacheService {
           status: data.status || '',
           notes: data.notes || '',
           tags: data.tags?.join(' ') || '',
+          componentId: id
         },
         title: data.name,
         groupTitle: data.name,

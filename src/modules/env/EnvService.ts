@@ -13,6 +13,7 @@ export class EnvService {
       status: 'Status',
       notes: 'Notes',
       tags: 'Tags',
+      componentId: "Component ID",
     })
   }
 }
