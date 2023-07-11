@@ -39,7 +39,7 @@ export class APIDitto {
     }
   }
 
-  public async getWorkspaceComponents(apiKey: string) {
+  public async getWorkspaceComponents(apiKey: string): Promise<WorkspaceComponentsByName> {
     const response = await sendGet<WorkspaceComponentsByName>(this.client, '/components', {
       headers: this.extractHeaders(apiKey),
       throwOnError: false,
