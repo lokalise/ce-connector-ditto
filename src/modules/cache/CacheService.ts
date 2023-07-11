@@ -3,6 +3,7 @@ import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/erro
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
 import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, IntegrationConfig, ItemIdentifiers } from '../../types'
+import { OTHER_COMPONENTS_GROUP } from '../../utils/constants'
 
 export class CacheService {
   private readonly dittoApiClient: APIDitto
@@ -22,11 +23,15 @@ export class CacheService {
 
     const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
-    return Object.entries(componentsByName).map(([id, data]) => ({
-      uniqueId: id,
-      groupId: parseName(data.name).groupName?.replaceAll(' ', '') || id,
-      metadata: {},
-    }))
+    return Object.entries(componentsByName).map(([id, data]) => {
+      const parsedName = parseName(data.name)
+
+      return {
+        uniqueId: id,
+        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
+        metadata: {},
+      }
+    })
   }
 
   async getItems(config: IntegrationConfig, auth: AuthConfig, ids: ItemIdentifiers[]) {
@@ -56,13 +61,13 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || "Other components",
+        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
         metadata: {},
         fields: {
           folder: data.folder || '',
           status: data.status || '',
           notes: data.notes || '',
-          tags: data.tags?.join(" ") || '',
+          tags: data.tags?.join(' ') || '',
         },
         title: parsedName.name,
         groupTitle: groupTitle,

@@ -36,6 +36,18 @@ retag_and_push_image() {
     docker push ${IMAGE}:latest
 }
 
+retag_and_push_image_ecr() {
+    IMAGE="${LOKALISE_ECR_REGISTRY}/${GIT_REPO_NAME}/${APP_NAME}"
+
+    log "Retaging ECR image with ${IMAGE}:${TAG}"
+
+    docker pull ${IMAGE}:PRE-${GIT_BASE_BRANCH}
+    docker tag ${IMAGE}:PRE-${GIT_BASE_BRANCH} ${IMAGE}:${TAG}
+    docker tag ${IMAGE}:PRE-${GIT_BASE_BRANCH} ${IMAGE}:latest
+    docker push ${IMAGE}:${TAG}
+    docker push ${IMAGE}:latest
+}
+
 create_git_release() {
     curl -s -X POST -H "Accept: application/vnd.github.v3+json" \
                     -H "Authorization: token ${GITHUB_TOKEN}" \
@@ -93,6 +105,7 @@ case ${action} in
     git_tag)
         create_git_tag
         retag_and_push_image
+        retag_and_push_image_ecr
         ;;
     git_release)
         create_git_release

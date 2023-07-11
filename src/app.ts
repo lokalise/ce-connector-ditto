@@ -1,6 +1,7 @@
 import type http from 'http'
 
 import { diContainer, fastifyAwilixPlugin } from '@fastify/awilix'
+import { fastifyCors } from '@fastify/cors'
 import {
   bugsnagPlugin,
   getRequestIdFastifyAppConfig,
@@ -14,7 +15,7 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
 import type pino from 'pino'
 
-import { getConfig, isDevelopment } from './infrastructure/config'
+import { getConfig, isDevelopment, isProduction } from './infrastructure/config'
 import { registerDependencies } from './infrastructure/diConfig'
 import { errorHandler } from './infrastructure/errors/errorHandler'
 import { resolveGlobalErrorLogObject } from './infrastructure/errors/globalErrorHandler'
@@ -79,8 +80,8 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
     logLevel: 'warn',
     info: {
       env: appConfig.nodeEnv,
-      app_version: appConfig.appVersion,
-      git_commit_sha: appConfig.gitCommitSha,
+      appVersion: appConfig.appVersion,
+      gitCommitSha: appConfig.gitCommitSha,
     },
     schema: false,
     exposeFailure: false,
@@ -111,6 +112,40 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
       releaseStage: appConfig.appEnv,
       appVersion: appConfig.appVersion,
     },
+  })
+
+  await app.register(fastifyCors, {
+    origin: (origin, cb) => {
+      if (origin === undefined) {
+        cb(null, false)
+        return
+      }
+
+      const hostname = new URL(origin).hostname
+
+      // CE pass-through
+      if (hostname.endsWith('.lokalise.cloud')) {
+        cb(null, true)
+        return
+      }
+
+      // Local pass-through, if app is in development
+      if (isDevelopment() && hostname === 'localhost') {
+        cb(null, true)
+        return
+      }
+
+      // Generate an error on other origins, disabling access
+      cb(new Error('Not allowed'), false)
+    },
+    credentials: true,
+    methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Accept', 'Content-Type', 'Authorization'],
+    exposedHeaders: [
+      'Access-Control-Allow-Origin',
+      'Access-Control-Allow-Methods',
+      'Access-Control-Allow-Headers',
+    ],
   })
 
   if (!isDevelopment()) {
