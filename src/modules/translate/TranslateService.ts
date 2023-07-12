@@ -50,7 +50,7 @@ export class TranslateService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
+        groupId: id,
         metadata: {},
         translations: {
           ...localTexts,
