@@ -59,11 +59,11 @@ export class CacheService {
         groupId: id,
         metadata: {},
         fields: {
-          folder: data.folder || '',
+          componentId: id,
           status: data.status || '',
+          folder: data.folder || '',
           notes: data.notes || '',
           tags: data.tags?.join(' ') || '',
-          componentId: id
         },
         title: data.name,
         groupTitle: data.name,
