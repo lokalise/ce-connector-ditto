@@ -28,7 +28,7 @@ export class CacheService {
 
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
+        groupId: id,
         metadata: {},
       }
     })
@@ -52,20 +52,19 @@ export class CacheService {
     )
 
     return filteredWorkspaceComponentEntries.map(([id, data]) => {
-      const parsedName = parseName(data.name)
-
       return {
         uniqueId: id,
-        groupId: parsedName.groupName?.replaceAll(' ', '') || OTHER_COMPONENTS_GROUP,
+        groupId: id,
         metadata: {},
         fields: {
           folder: data.folder || '',
           status: data.status || '',
           notes: data.notes || '',
           tags: data.tags?.join(' ') || '',
+          componentId: id,
         },
-        title: parsedName.name,
-        groupTitle: parsedName.groupName || 'Other components',
+        title: data.name,
+        groupTitle: data.name,
       }
     })
   }
