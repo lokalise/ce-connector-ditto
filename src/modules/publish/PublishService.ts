@@ -46,10 +46,10 @@ export class PublishService {
     const toUpdate: VariantUpdateData = {}
 
     for (const engineLocale of locales) {
-      const finalLocale = engineLocalesMap.get(engineLocale) ?? engineLocale
-      toUpdate[finalLocale] = {}
+      const connectorLocale = engineLocalesMap.get(engineLocale) ?? engineLocale
+      toUpdate[connectorLocale] = {}
       for (const item of items) {
-        toUpdate[finalLocale][item.uniqueId] = { text: item.translations[engineLocale] }
+        toUpdate[connectorLocale][item.uniqueId] = { text: item.translations[engineLocale] }
       }
     }
     const toUpdateDataEntries = Object.entries(toUpdate)
