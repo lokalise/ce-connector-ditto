@@ -36,12 +36,20 @@ export class PublishService {
     }
 
     const locales = Object.keys(items[0].translations)
+    const engineLocalesMap = new Map<string, string>()
+    const connectorLocalesMap = new Map<string, string>()
+    locales.forEach((locale) => {
+      const lowerCased = locale !== defaultLocale ? locale.toLowerCase() : locale
+      engineLocalesMap.set(locale, lowerCased)
+      connectorLocalesMap.set(lowerCased, locale)
+    })
     const toUpdate: VariantUpdateData = {}
 
-    for (const locale of locales) {
-      toUpdate[locale] = {}
+    for (const engineLocale of locales) {
+      const connectorLocale = engineLocalesMap.get(engineLocale) ?? engineLocale
+      toUpdate[connectorLocale] = {}
       for (const item of items) {
-        toUpdate[locale][item.uniqueId] = { text: item.translations[locale] }
+        toUpdate[connectorLocale][item.uniqueId] = { text: item.translations[engineLocale] }
       }
     }
     const toUpdateDataEntries = Object.entries(toUpdate)
@@ -58,16 +66,17 @@ export class PublishService {
       if (isRejected(result) && variant) {
         const uniqueIdsWithError = Object.keys(data)
 
+        const engineVariant = connectorLocalesMap.get(variant) ?? variant
         uniqueIdsWithError.forEach((uniqueId) => {
           const existingError = publishErrors.find((error) => error.uniqueId === uniqueId)
           if (existingError) {
             existingError.perLocaleErrors = {
               ...existingError.perLocaleErrors,
-              ...buildPerLocaleErrors(result.reason as InternalError, variant),
+              ...buildPerLocaleErrors(result.reason as InternalError, engineVariant),
             }
           } else {
             publishErrors.push(
-              buildTranslatePublishError(result.reason as InternalError, uniqueId, variant),
+              buildTranslatePublishError(result.reason as InternalError, uniqueId, engineVariant),
             )
           }
         })

@@ -14,11 +14,11 @@ export class TranslateService {
   async getContent(
     config: IntegrationConfig,
     auth: AuthConfig,
-    locales: string[],
     ids: ItemIdentifiers[],
     // Default locale might not be needed for integration logic
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     defaultLocale: string,
+    originalLocalesMap: Map<string, string>,
   ): Promise<[ContentItem[], ItemIdentifiers[]]> {
     const { apiKey } = auth
 
@@ -29,6 +29,7 @@ export class TranslateService {
       throw new AuthFailedError()
     }
 
+    const locales = [...originalLocalesMap.keys()]
     const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
     const desiredIds = ids.map((id) => id.uniqueId)
@@ -38,10 +39,11 @@ export class TranslateService {
 
     const items = filteredWorkspaceComponentEntries.map(([id, data]) => {
       const localTexts = locales.reduce((acc, local) => {
+        const finalLocale = originalLocalesMap.get(local) ?? local
         if (data.variants?.[local]) {
-          acc[local] = data.variants[local].text
+          acc[finalLocale] = data.variants[local].text
         } else {
-          acc[local] = ''
+          acc[finalLocale] = ''
         }
 
         return acc
