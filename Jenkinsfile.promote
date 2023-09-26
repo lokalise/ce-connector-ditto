@@ -1,5 +1,5 @@
 def REGISTRY_CREDENTIAL_ID = "DOCKER_REGISTRY"
-def CI_ENV_IMAGE           = "reg.lokalise.work/ci-env:v0"
+def CI_ENV_IMAGE           = "053497547689.dkr.ecr.eu-central-1.amazonaws.com/tools/ci-env:v0.16.0"
 def NODE_TAG               = "lok-cteng-conn-${ENV}"
 def NORELEASE              = ""
 
