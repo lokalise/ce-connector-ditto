@@ -4,14 +4,8 @@ jobs:
     node: build
     triggers:
       githubHook: true
-    bindings:
-      - type: string
-        credentialID: DOCKER_PASSWORD
-        variable: DOCKER_PASSWORD
     commands:
-      - docker login -u lokalise -p ${DOCKER_PASSWORD} reg.lokalise.work
-      - docker build -f docker/Dockerfile -t 053497547689.dkr.ecr.eu-central-1.amazonaws.com/ce-connector-ditto/app:PRE-{{.PR}} -t reg.lokalise.work/ce-connector-ditto/app:PRE-{{.PR}} .
-      - docker push reg.lokalise.work/ce-connector-ditto/app:PRE-{{.PR}}
+      - docker build -f docker/Dockerfile -t 053497547689.dkr.ecr.eu-central-1.amazonaws.com/ce-connector-ditto/app:PRE-{{.PR}} .
       - docker push 053497547689.dkr.ecr.eu-central-1.amazonaws.com/ce-connector-ditto/app:PRE-{{.PR}}
 
   - name: deploy-{{.PR}}
@@ -24,13 +18,8 @@ jobs:
         path: /health
     triggers:
       upstream: build-{{.PR}}
-    bindings:
-      - type: string
-        credentialID: DOCKER_PASSWORD
-        variable: DOCKER_PASSWORD
     commands:
       - cp docker/.env.default .env
-      - docker login -u lokalise -p ${DOCKER_PASSWORD} reg.lokalise.work
       - TAG=PRE-{{.PR}} docker-compose -f docker/docker-compose.yml -f docker/docker-compose.override.pre.yml pull
       - TAG=PRE-{{.PR}} docker-compose -f docker/docker-compose.yml -f docker/docker-compose.override.pre.yml up -d
 
