@@ -30,7 +30,7 @@ jobs:
       upstream: deploy-main
     pipeline: |
       node("build") {
-        git(branch: 'main', credentialsId: 'lokalise-engineering', url: 'git@github.com:lokalise/ce-connector-ditto.git')
+        git(branch: 'main', credentialsId: 'LOKALISE_KARGO_GITHUB_APP', url: 'https://github.com/lokalise/ce-connector-ditto.git')
         properties([
           [$class: 'BuildBlockerProperty', useBuildBlocker: false],
           disableConcurrentBuilds(),
