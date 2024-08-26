@@ -7,7 +7,7 @@ In production you are expected to set environment variables during deployment (e
 
 ### app
 
-- `APP_NAME` - 
+- `APP_NAME` -
 - `CLUSTER` -
 - `GIT_REPO_NAME` -
 - `GIT_BASE_BRANCH` -

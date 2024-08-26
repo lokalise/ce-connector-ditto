@@ -8,14 +8,14 @@ import {
   metricsPlugin,
   publicHealthcheckPlugin,
 } from '@lokalise/fastify-extras'
+import type { FastifyBaseLogger } from 'fastify'
 import fastify from 'fastify'
 import customHealthCheck from 'fastify-custom-healthcheck'
 import fastifyGracefulShutdown from 'fastify-graceful-shutdown'
 import type { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
-import type pino from 'pino'
 
-import { getConfig, isDevelopment, isProduction } from './infrastructure/config'
+import { getConfig, isDevelopment } from './infrastructure/config'
 import { registerDependencies } from './infrastructure/diConfig'
 import { errorHandler } from './infrastructure/errors/errorHandler'
 import { resolveGlobalErrorLogObject } from './infrastructure/errors/globalErrorHandler'
@@ -46,7 +46,7 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
   const logLevels = ['debug', 'trace']
   const enableRequestLogging = logLevels.includes(appConfig.logLevel)
 
-  const app = fastify<http.Server, http.IncomingMessage, http.ServerResponse, pino.Logger>({
+  const app = fastify<http.Server, http.IncomingMessage, http.ServerResponse, FastifyBaseLogger>({
     ...getRequestIdFastifyAppConfig(),
     logger: loggerConfig,
     disableRequestLogging: !enableRequestLogging,
@@ -76,21 +76,22 @@ export async function getApp(configOverrides: ConfigOverrides = {}) {
   })
 
   await app.register(customHealthCheck, {
-    path: '/health',
+    path: '/',
     logLevel: 'warn',
     info: {
       env: appConfig.nodeEnv,
-      appVersion: appConfig.appVersion,
+      version: appConfig.appVersion,
       gitCommitSha: appConfig.gitCommitSha,
     },
     schema: false,
     exposeFailure: false,
   })
   await app.register(publicHealthcheckPlugin, {
+    url: '/health',
+    healthChecks: [],
     responsePayload: {
       version: appConfig.appVersion,
       gitCommitSha: appConfig.gitCommitSha,
-      status: 'OK',
     },
   })
   await app.register(healthcheckPlugin)

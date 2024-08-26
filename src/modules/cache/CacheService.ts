@@ -3,7 +3,6 @@ import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/erro
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
 import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, IntegrationConfig, ItemIdentifiers } from '../../types'
-import { OTHER_COMPONENTS_GROUP } from '../../utils/constants'
 
 export class CacheService {
   private readonly dittoApiClient: APIDitto
@@ -24,6 +23,7 @@ export class CacheService {
     const componentsByName = await this.dittoApiClient.getWorkspaceComponents(apiKey)
 
     return Object.entries(componentsByName).map(([id, data]) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const parsedName = parseName(data.name)
 
       return {
@@ -52,6 +52,7 @@ export class CacheService {
     )
 
     return filteredWorkspaceComponentEntries.map(([id, data]) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const parsedName = parseName(data.name)
 
       return {

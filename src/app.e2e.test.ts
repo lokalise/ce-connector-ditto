@@ -20,9 +20,9 @@ describe('app', () => {
       const response = await app.inject().get('/health').end()
 
       expect(response.json()).toMatchObject({
-        healthChecks: {
-          heartbeat: 'HEALTHY',
-        },
+        checks: {},
+        gitCommitSha: 'sha',
+        heartbeat: 'HEALTHY',
       })
       expect(response.statusCode).toBe(200)
     })
@@ -31,10 +31,16 @@ describe('app', () => {
       const response = await app.inject().get('/').end()
 
       expect(response.statusCode).toBe(200)
-      expect(response.json()).toEqual({
-        gitCommitSha: 'sha',
-        status: 'OK',
-        version: '1',
+      expect(response.json()).toMatchObject({
+        healthChecks: {
+          heartbeat: 'HEALTHY',
+        },
+        info: {
+          env: 'test',
+          gitCommitSha: 'sha',
+          version: '1',
+        },
+        stats: expect.any(Object),
       })
     })
   })

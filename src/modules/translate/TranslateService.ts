@@ -3,7 +3,6 @@ import { AuthFailedError, AuthInvalidDataError } from '../../infrastructure/erro
 import type { APIDitto } from '../../integrations/ditto/client/APIDitto'
 import { parseName } from '../../integrations/ditto/mapper'
 import type { AuthConfig, ContentItem, IntegrationConfig, ItemIdentifiers } from '../../types'
-import { OTHER_COMPONENTS_GROUP } from '../../utils/constants'
 
 export class TranslateService {
   private readonly dittoApiClient: APIDitto
@@ -48,6 +47,7 @@ export class TranslateService {
 
         return acc
       }, {} as Record<string, string>)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const parsedName = parseName(data.name)
 
       return {
