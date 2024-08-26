@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:18.19.1-bookworm-slim as base
+FROM node:20.15.1-bookworm-slim as base
 
 RUN set -ex;\
     apt-get update -y; \
@@ -42,22 +42,17 @@ FROM dependencies as build
 COPY --chown=node:node . .
 RUN npm run build
 
-# ---- App ----
-FROM base as app
-
-COPY --chown=node:node --from=build /home/node/app/dist .
-COPY --chown=node:node --from=build /home/node/app/prod_node_modules node_modules
-
-# ---- Rrelase ----
+# ---- Release ----
 FROM base as release
 
 COPY --from=build /usr/bin/dumb-init /usr/bin/dumb-init
-COPY --chown=node:node --from=app /home/node/app /home/node/app
+COPY --chown=node:node --from=build /home/node/app/dist .
+COPY --chown=node:node --from=build /home/node/app/prod_node_modules node_modules
 
 ARG GIT_COMMIT_SHA=""
 ARG APP_VERSION=""
 
-ENV GIT_COMMIT_SHA=$GIT_COMMIT_SHA
+ENV GIT_COMMIT_SHA=${GIT_COMMIT_SHA}
 ENV APP_VERSION=${APP_VERSION}
 ENV NODE_ENV=production
 ENV NODE_PATH=.
