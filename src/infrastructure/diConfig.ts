@@ -1,9 +1,7 @@
 import type { AwilixContainer, Resolver } from 'awilix'
 import { asClass, asFunction, Lifetime } from 'awilix'
-import type { FastifyInstance } from 'fastify'
-import type P from 'pino'
+import type { FastifyBaseLogger, FastifyInstance } from 'fastify'
 
-// import type { FakeIntegrationApiClient } from '../integrations/fakeIntegration/client/FakeIntegrationApiClient'
 import { APIDitto } from '../integrations/ditto/client/APIDitto'
 import { AuthService } from '../modules/auth/AuthService'
 import { CacheService } from '../modules/cache/CacheService'
@@ -16,7 +14,7 @@ import type { Config } from './config'
 
 export type ExternalDependencies = {
   app?: FastifyInstance
-  logger?: P.Logger
+  logger?: FastifyBaseLogger
 }
 export const SINGLETON_CONFIG = { lifetime: Lifetime.SINGLETON }
 
@@ -24,7 +22,8 @@ export type DependencyOverrides = Partial<DiConfig>
 
 export function registerDependencies(
   diContainer: AwilixContainer,
-  dependencies: ExternalDependencies = {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _dependencies: ExternalDependencies = {},
   dependencyOverrides: DependencyOverrides = {},
 ): void {
   const diConfig: DiConfig = {
